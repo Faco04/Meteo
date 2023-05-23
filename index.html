@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>App Meteo</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+       
+
+        <style>
+                  body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+          }
+          
+          h1 {
+            text-align: center;
+            margin-top: 50px;
+          }
+          
+          input[type="text"] {
+            display: block;
+            margin: 50px auto;
+            padding: 10px;
+            font-size: 18px;
+            width: 300px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+          }
+          
+          button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px;
+            font-size: 18px;
+            width: 150px;
+            border-radius: 5px;
+            border: none;
+            background-color: #0074d9;
+            color: #fff;
+            cursor: pointer;
+          }
+          
+          #weather-data {
+            text-align: center;
+            margin-top: 50px;
+          }
+          
+          #weather-data p {
+            margin: 10px 0;
+            font-size: 24px;
+          }
+          
+          #weather-data img {
+            width: 100px;
+            height: 100px;
+            margin-top: 20px;
+          }
+          
+          #map {
+            width: 700px;
+            height: 400px; /* Imposta l'altezza al 100% dell'altezza della finestra */
+            margin-left: auto;
+            margin-right: auto;
+          }
+          .preferito-selezionato {
+            background-color: yellow;
+          }
+
+
+        </style>
+      </head>
+  <body>
+    <h1>App Meteo</h1>
+    <input type="text" id="city-input" placeholder="Inserisci il nome della città" />
+    <button id="submit-btn">Cerca</button>
+    <div id="weather-data"></div>
+    <div id="map"></div>
+    
+
+
+    <footer>
+      <button id="logout" onclick="logout()" >Logout</button>
+    </footer> 
+
+    <script>
+
+          const apiKey = "7fd2fbbb8cc8fa7c4656b235c8e7c2ba";
+          let map;
+          let marker = null;
+
+          function getWeatherData(cityName) {
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`;
+
+            $.ajax({
+              url: apiUrl,
+              method: "GET",
+              success: function (data) {
+                const weatherData = {
+                  temperature: Math.round(data.main.temp),
+                  description: data.weather[0].description,
+                  icon: data.weather[0].icon,
+                  latitude: data.coord.lat,
+                  longitude: data.coord.lon,
+                };
+
+                displayWeatherData(weatherData);
+                updateMapMarker(weatherData.latitude, weatherData.longitude, weatherData.icon);
+              },
+
+              error: function (error) {
+                alert("Errore: " + error.responseJSON.message);
+              },
+              
+            });
+
+            
+
+          }
+
+          function displayWeatherData(weatherData) {
+
+          
+
+
+            const weatherDiv = $("#weather-data");
+
+            const temperature = $("<p>").text(`Temperatura: ${weatherData.temperature}°C`);
+            const description = $("<p>").text(`Condizioni: ${weatherData.description}`);
+            const iconUrl = `http://openweathermap.org/img/w/${weatherData.icon}.png`;
+            const icon = $("<img>").attr("src", iconUrl);
+
+            weatherDiv.empty();
+            weatherDiv.append(temperature, description, icon);
+          }
+
+          function initializeMap() {
+            map = L.map("map").setView([0, 0], 1);
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+              maxZoom: 18,
+            }).addTo(map);
+          }
+
+          function updateMapMarker(latitude, longitude, icon) {
+            if (!map) {
+              initializeMap();
+            }
+
+            if (marker) {
+              map.removeLayer(marker);
+            }
+
+            const customIcon = L.icon({
+              iconUrl: `http://openweathermap.org/img/w/${icon}.png`,
+              iconSize: [32, 32],
+            });
+
+            marker = L.marker([latitude, longitude], { icon: customIcon }).addTo(map);
+            map.setView([latitude, longitude], 13);
+
+           
+          }
+
+          $(document).ready(function () {
+            $("#submit-btn").click(function () {
+              const cityName = $("#city-input").val();
+              getWeatherData(cityName);
+          });
+          });
+          
+          function logout(){
+            fetch('/logout', {
+                method: 'get'
+            }).then((data)=> {
+                location.href = "http://localhost:3000/";
+            })
+        }
+
+
+    </script>
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
+
+

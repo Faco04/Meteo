@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    form {
+      max-width: 300px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #0074d9;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0074d9;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>Login</h1>
+  <form id="login-form" method="post" action="/userr" >
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="email" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="passw" required>
+    <br>
+    <button id="login">Login</button>
+  </form>
+
+  <script>
+    
+
+
+
+    const logButton=document.getElementById('login');
+    logButton.addEventListener('click',function(){
+        const rbody = JSON.stringify(
+                    {
+                        email: document.getElementById('username').value, 
+                        passw:document.getElementById('password').value
+                    })
+
+        fetch('/userr'),{
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: rbody
+    }.then((data)=>{
+    
+        
+    });
+
+    });
+
+
+
+
+  </script>
+</body>
+</html>
